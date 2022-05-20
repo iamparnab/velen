@@ -6,7 +6,7 @@ description = "A simple package for making REST APIs"
 license = "MIT OR Apache-2.0"
 documentation = "in progress"
 homepage = "in progress"
-readme = "in progres"
+readme = "README.md"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
