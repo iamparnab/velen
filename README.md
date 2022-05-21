@@ -4,7 +4,9 @@
 
 #### Import
 <code>
-use velen::{server::create_server, server_models::{Request, Response}};
+use velen::server::create_server;
+    
+use velen::models::server_models::{Request, Response};
 </code>
 
 #### Create server instance
