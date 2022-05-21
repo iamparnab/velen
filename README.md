@@ -4,32 +4,23 @@
 
 #### Import
 <code>
-<pre>
 use velen::{server::create_server, server_models::{Request, Response}};
-</pre>
 </code>
 
 #### Create server instance
 <code>
-<pre>
 let mut server = create_server();
-</pre>
 </code>
 
 #### Register endpoints
 <code>
-<pre>
 server.get("/get", get_handler);
-server.post("/add", post_handler);
-</pre>
-</code>
+    
+server.post("/add", post_handler);</code>
 
 #### Start listening
 <code>
-<pre>
-server.listen("127.0.0.1", 3333, server_start_handler);
-</pre>
-</code>
+server.listen("127.0.0.1", 3333, server_start_handler);</code>
 
 #### Example handlers
 <code>
@@ -65,6 +56,12 @@ fn post_handler(req: Request, mut res: Response) {
         message: format!("Received query parameters x={:?}, y={:?}", req.query_params.get("x").unwrap(), req.query_params.get("y").unwrap()),
     };
     res.send(good_response.to_string());
-}
-</pre>
-</code>
+}</pre></code>
+
+#### Limitations
+- Only GET and POST are implemented
+- Only application/json is supported, so don't try to upload files 
+- During sending a response `set_status_code` has to be called before `set_header`
+- No multithreading
+#### TODO
+- Fix above limitations
