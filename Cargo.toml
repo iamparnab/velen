@@ -6,7 +6,7 @@ description = "A simple package for making REST APIs"
 license = "MIT OR Apache-2.0"
 documentation = "https://github.com/iamparnab/velen/blob/master/README.md"
 homepage = "https://github.com/iamparnab/velen"
-readme = "https://github.com/iamparnab/velen/blob/master/README.md"
+readme = "README.md"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
