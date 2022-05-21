@@ -1,6 +1,7 @@
 mod impls;
-mod models;
 mod utils;
+
+pub mod models;
 pub mod server {
     use crate::models::server_models::Server;
     use std::collections::HashMap;
