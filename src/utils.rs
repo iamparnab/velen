@@ -4,7 +4,7 @@ pub mod server_utils {
     use regex::Regex;
     pub fn get_method_path_query(content: &str) -> (String, String, HashMap<String, String>) {
         /* First extract http method and (path + query_params) */
-        let outer_re = Regex::new(r"^(GET|POST) (.+) HTTP").unwrap();
+        let outer_re = Regex::new(r"^(GET|POST|DELETE|PUT|HEAD|PATCH) (.+) HTTP").unwrap();
         let outer_caps = outer_re.captures(content).unwrap();
 
         let method = outer_caps.get(1).unwrap().as_str().to_string();

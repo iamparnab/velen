@@ -35,6 +35,18 @@ impl Server {
     pub fn post(&mut self, path: &str, handler: fn(Request, Response) -> ()) {
         self.request_table.insert(format!("POST:{path}"), handler);
     }
+    pub fn put(&mut self, path: &str, handler: fn(Request, Response) -> ()) {
+        self.request_table.insert(format!("PUT:{path}"), handler);
+    }
+    pub fn delete(&mut self, path: &str, handler: fn(Request, Response) -> ()) {
+        self.request_table.insert(format!("DELETE:{path}"), handler);
+    }
+    pub fn head(&mut self, path: &str, handler: fn(Request, Response) -> ()) {
+        self.request_table.insert(format!("HEAD:{path}"), handler);
+    }
+    pub fn patch(&mut self, path: &str, handler: fn(Request, Response) -> ()) {
+        self.request_table.insert(format!("PATCH:{path}"), handler);
+    }
     fn handle_connection(server: &Server, mut stream: TcpStream) {
         let mut req_body = [0; 1024];
         stream.read(&mut req_body).unwrap();
