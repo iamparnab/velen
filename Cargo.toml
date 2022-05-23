@@ -1,6 +1,6 @@
 [package]
 name = "velen"
-version = "0.1.4"
+version = "0.1.5"
 edition = "2021"
 description = "A simple package for making REST APIs"
 license = "MIT OR Apache-2.0"
