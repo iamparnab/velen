@@ -6,7 +6,7 @@ use std::{
 
 use crate::{
     models::server_models::{Request, Response, Server},
-    utils::server_utils::{get_method_path_query, parse_body},
+    utils::server_utils::{get_method_path_query, parse_body, parse_headers},
 };
 
 impl Server {
@@ -54,11 +54,18 @@ impl Server {
         let request_body = &String::from_utf8(req_body.to_vec()).unwrap();
         let (method, path, query_map) = get_method_path_query(request_body);
         let request_payload = parse_body(request_body);
+        let request_headers = parse_headers(request_body);
         let handler = server.request_table.get(&format!("{method}:{path}"));
 
         match handler {
             Some(api_handler) => {
-                let req = Server::build_request(method, path, request_payload, query_map);
+                let req = Server::build_request(
+                    method,
+                    path,
+                    request_payload,
+                    query_map,
+                    request_headers,
+                );
                 let res = Server::build_response(stream);
 
                 api_handler(req, res);
@@ -86,12 +93,14 @@ impl Server {
         path: String,
         body: String,
         query_map: HashMap<String, String>,
+        request_headers: HashMap<String, String>,
     ) -> Request {
         return Request {
             method,
             path,
             body,
             query_params: query_map,
+            headers: request_headers,
         };
     }
     fn build_response(stream: TcpStream) -> Response {

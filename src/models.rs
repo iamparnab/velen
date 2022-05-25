@@ -10,6 +10,7 @@ pub mod server_models {
         pub method: String,
         pub body: String,
         pub query_params: HashMap<String, String>,
+        pub headers: HashMap<String, String>,
     }
     pub struct Response {
         pub stream: TcpStream,

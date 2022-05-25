@@ -28,7 +28,7 @@ pub mod server_utils {
 
         let query_param_pairs = query_string.split("&");
 
-        /* Then extrac individual Key and Values */
+        /* Then extract individual Key and Values */
         let pair_re = Regex::new(r"(.*)=(.*)").unwrap();
 
         let mut query_map = HashMap::new();
@@ -54,5 +54,28 @@ pub mod server_utils {
             .trim_end_matches(char::from(0))
             .to_string();
         return val;
+    }
+    pub fn parse_headers(content: &str) -> HashMap<String, String> {
+        let mut headers = HashMap::new();
+        let mut itr = content.split("\r\n");
+        /* Skip status line */
+        itr.next();
+
+        for each_line in itr {
+            match each_line {
+                "" => {
+                    /* "" signifies end of headers and start of request payload */
+                    break;
+                }
+                _ => {
+                    let mut key_value_pair = each_line.split(": ");
+                    headers.insert(
+                        key_value_pair.next().unwrap().to_string(),
+                        key_value_pair.next().unwrap().to_string(),
+                    );
+                }
+            }
+        }
+        return headers;
     }
 }
