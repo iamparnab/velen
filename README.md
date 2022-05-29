@@ -17,7 +17,7 @@ let mut server = create_server();
 #### Register endpoints
 <code>
 server.get("/get", get_handler);
-    
+
 server.post("/add", post_handler);</code>
 
 #### Start listening
@@ -43,22 +43,29 @@ fn get_handler(_: Request, mut res: Response) {
     };
     res.send(good_response.to_string());
 }
-fn post_handler(req: Request, mut res: Response) {
-    res.set_status_code(200);
-    res.set_header("Content-Type", "application/json");
-    struct GoodResponse {
-        message: String,
-    }
-    impl Display for GoodResponse {
-        fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-            write!(f, "{{\"message\": \"{}\"}}", self.message)
-        }
-    }
-    let good_response = GoodResponse {
-        message: format!("Received query parameters x={:?}, y={:?}", req.query_params.get("x").unwrap(), req.query_params.get("y").unwrap()),
-    };
-    res.send(good_response.to_string());
-}</pre></code>
+</pre></code>
+
+#### Read Query Params
+<code>req.query_params.get("user_id").unwrap();</code>
+
+#### Read Request Header
+<code>req.headers.get("x-custom-header").unwrap();</code>
+
+#### Read Request Body
+<code>
+ /* Velen does not deserialize request payload. Use of Serde is recommended. /*
+
+ req.body;</code>
+
+ #### Set Response Status
+<code>res.set_status_code(200);</code>
+
+#### Set Response header
+<code>res.set_header("Content-Type", "application/json");</code>
+
+#### Set Response payload
+<code>res.send("{\"status\":\"ok\"}");</code>
+
 
 #### Limitations
 - OPTIONS not implemented
