@@ -3,30 +3,29 @@
 ### How to use
 
 #### Import
-<code>
+```rust
 use velen::server::create_server;
-    
 use velen::models::server_models::{Request, Response};
-</code>
+```
 
 #### Create server instance
-<code>
+```rust
 let mut server = create_server();
-</code>
+```
 
 #### Register endpoints
-<code>
+```rust
 server.get("/get", get_handler);
-
-server.post("/add", post_handler);</code>
+server.post("/add", post_handler);
+```
 
 #### Start listening
-<code>
-server.listen("127.0.0.1", 3333, server_start_handler);</code>
+```rust
+server.listen("127.0.0.1", 3333, server_start_handler);
+```
 
 #### Example handlers
-<code>
-<pre>
+```rust
 fn get_handler(_: Request, mut res: Response) {
     res.set_status_code(200);
     res.set_header("Content-Type", "application/json");
@@ -43,28 +42,40 @@ fn get_handler(_: Request, mut res: Response) {
     };
     res.send(good_response.to_string());
 }
-</pre></code>
+```
 
 #### Read Query Params
-<code>req.query_params.get("user_id").unwrap();</code>
+
+```rust
+req.query_params.get("user_id").unwrap();
+```
 
 #### Read Request Header
-<code>req.headers.get("x-custom-header").unwrap();</code>
+```rust
+req.headers.get("x-custom-header").unwrap();
+```
 
 #### Read Request Body
-<code>
- /* Velen does not deserialize request payload. Use of Serde is recommended. /*
+```rust
+ /* Velen does not deserialize request payload. Use of Serde is recommended. */
 
- req.body;</code>
+ req.body;
+ ```
 
  #### Set Response Status
-<code>res.set_status_code(200);</code>
+```rust
+res.set_status_code(200);
+```
 
 #### Set Response header
-<code>res.set_header("Content-Type", "application/json");</code>
+```rust
+res.set_header("Content-Type", "application/json");
+```
 
 #### Set Response payload
-<code>res.send("{\"status\":\"ok\"}");</code>
+```rust
+res.send("{\"status\":\"ok\"}");
+```
 
 
 #### Limitations
