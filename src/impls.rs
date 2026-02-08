@@ -2,6 +2,8 @@ use std::{
     collections::HashMap,
     io::{self, Read, Write},
     net::{TcpListener, TcpStream},
+    sync::Arc,
+    thread,
 };
 
 use crate::{
@@ -10,19 +12,30 @@ use crate::{
 };
 
 impl Server {
-    pub fn listen(&mut self, host: &str, port: i32, handler: fn(Result<i32, io::Error>) -> ()) {
+    pub fn listen(self, host: &str, port: i32, handler: fn(Result<i32, io::Error>) -> ()) {
         let addr = format!("{host}:{port}");
         let listener = TcpListener::bind(addr);
 
         match listener {
             Ok(connection) => {
+                let shared_server = Arc::new(self);
                 handler(Ok(port));
                 for connection in connection.incoming() {
                     match connection {
                         Ok(stream) => {
-                            Server::handle_connection(&self, stream);
+                            let shared_server_clone = Arc::clone(&shared_server);
+                            thread::spawn(move || {
+                                println!(
+                                    "New connection is being handled by thread: {:?}",
+                                    thread::current().id()
+                                );
+
+                                shared_server_clone.handle_connection(stream);
+                            });
                         }
-                        Err(err) => handler(Err(err)),
+                        Err(err) => {
+                            println!("Error while handing connection {:?}", err);
+                        }
                     }
                 }
             }
@@ -47,7 +60,7 @@ impl Server {
     pub fn patch(&mut self, path: &str, handler: fn(Request, Response) -> ()) {
         self.request_table.insert(format!("PATCH:{path}"), handler);
     }
-    fn handle_connection(server: &Server, mut stream: TcpStream) {
+    fn handle_connection(&self, mut stream: TcpStream) {
         let mut req_body = [0; 1024];
         stream.read(&mut req_body).unwrap();
 
@@ -55,7 +68,7 @@ impl Server {
         let (method, path, query_map) = get_method_path_query(request_body);
         let request_payload = parse_body(request_body);
         let request_headers = parse_headers(request_body);
-        let handler = server.request_table.get(&format!("{method}:{path}"));
+        let handler = self.request_table.get(&format!("{method}:{path}"));
 
         match handler {
             Some(api_handler) => {

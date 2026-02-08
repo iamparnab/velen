@@ -82,6 +82,5 @@ res.send("{\"status\":\"ok\"}");
 - OPTIONS not implemented
 - Only application/json is supported, so don't try to upload files 
 - During sending a response `set_status_code` has to be called before any `set_header`. That is how response is actually sent to client.
-- No multithreading
 #### TODO
 - Fix above limitations
