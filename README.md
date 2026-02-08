@@ -1,5 +1,5 @@
 # Velen
-### Just another REST framework
+### Just another HTTP framework
 ### How to use
 
 #### Import

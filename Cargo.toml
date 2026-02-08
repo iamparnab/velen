@@ -1,8 +1,8 @@
 [package]
 name = "velen"
-version = "0.1.9"
+version = "0.1.10"
 edition = "2021"
-description = "A simple package for making REST APIs"
+description = "A simple package for starting a HTTP server"
 license = "MIT OR Apache-2.0"
 documentation = "https://github.com/iamparnab/velen/blob/master/README.md"
 homepage = "https://github.com/iamparnab/velen"
