@@ -11,6 +11,8 @@ use crate::{
     utils::server_utils::{get_method_path_query, parse_body, parse_headers},
 };
 
+use std::fs;
+
 impl Server {
     pub fn listen(self, host: &str, port: i32, handler: fn(Result<i32, io::Error>) -> ()) {
         let addr = format!("{host}:{port}");
@@ -45,6 +47,13 @@ impl Server {
     pub fn get(&mut self, path: &str, handler: fn(Request, Response) -> ()) {
         self.request_table.insert(format!("GET:{path}"), handler);
     }
+    fn get_private<Handler>(&mut self, path: &str, handler: Handler)
+    where
+        Handler: Fn(Request, Response) + 'static + Send + Sync,
+    {
+        self.request_table_private
+            .insert(format!("GET:{path}"), Box::new(handler));
+    }
     pub fn post(&mut self, path: &str, handler: fn(Request, Response) -> ()) {
         self.request_table.insert(format!("POST:{path}"), handler);
     }
@@ -68,37 +77,35 @@ impl Server {
         let (method, path, query_map) = get_method_path_query(request_body);
         let request_payload = parse_body(request_body);
         let request_headers = parse_headers(request_body);
-        let handler = self.request_table.get(&format!("{method}:{path}"));
 
-        match handler {
-            Some(api_handler) => {
-                let req = Server::build_request(
-                    method,
-                    path,
-                    request_payload,
-                    query_map,
-                    request_headers,
-                );
-                let res = Server::build_response(stream);
+        if let Some(api_handler) = self.request_table.get(&format!("{method}:{path}")) {
+            let req =
+                Server::build_request(method, path, request_payload, query_map, request_headers);
+            let res = Server::build_response(stream);
 
-                api_handler(req, res);
-            }
-            None => {
-                /* Handle 404 */
-                stream
-                    .write(
-                        format!(
-                            "{}\r\n{}\r\n\r\n{}",
-                            "HTTP/1.1 404 NOT FOUND".to_string(),
-                            "Content-Type: application/json".to_string(),
-                            "{\"message\":\"Not found\"}".to_string()
-                        )
-                        .as_bytes(),
+            api_handler(req, res);
+        } else if let Some(api_handler) =
+            self.request_table_private.get(&format!("{method}:{path}"))
+        {
+            let req =
+                Server::build_request(method, path, request_payload, query_map, request_headers);
+            let res = Server::build_response(stream);
+
+            api_handler(req, res);
+        } else {
+            stream
+                .write(
+                    format!(
+                        "{}\r\n{}\r\n\r\n{}",
+                        "HTTP/1.1 404 NOT FOUND".to_string(),
+                        "Content-Type: application/json".to_string(),
+                        "{\"message\":\"Not found\"}".to_string()
                     )
-                    .unwrap();
+                    .as_bytes(),
+                )
+                .unwrap();
 
-                stream.flush().unwrap();
-            }
+            stream.flush().unwrap();
         }
     }
     fn build_request(
@@ -118,6 +125,20 @@ impl Server {
     }
     fn build_response(stream: TcpStream) -> Response {
         return Response { stream, code: 200 };
+    }
+    pub fn serve_static(&mut self, path: &str) {
+        let directories = fs::read_dir(path).unwrap();
+
+        for d in directories {
+            let path = d.unwrap().path();
+            let dir = path.to_str().unwrap().trim_start_matches(".").to_string();
+
+            self.get_private(&dir, move |_, mut res| {
+                res.set_status_code(200);
+                res.set_header("Content-Type", "text/css"); // TODO: set correct mime type
+                res.send(fs::read_to_string(&path).unwrap());
+            });
+        }
     }
 }
 

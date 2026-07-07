@@ -10,6 +10,7 @@ pub mod server {
         return Server {
             stream: None,
             request_table: HashMap::new(),
+            request_table_private: HashMap::new(),
         };
     }
 }
