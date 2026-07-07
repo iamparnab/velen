@@ -8,7 +8,7 @@ fn main() {
     let mut server = create_server();
 
     server.serve_static("./public");
-    // exit(10);
+
     server.get("/get", get_handler);
 
     server.listen("127.0.0.1", 3333, |port| {
