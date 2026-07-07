@@ -4,6 +4,8 @@ pub mod server_models {
     pub struct Server {
         pub stream: Option<TcpStream>,
         pub request_table: HashMap<String, fn(Request, Response) -> ()>,
+        pub request_table_private:
+            HashMap<String, Box<dyn Fn(Request, Response) + Send + Sync + 'static>>,
     }
     pub struct Request {
         pub path: String,
